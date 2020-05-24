@@ -1,0 +1,148 @@
+.craft_result{
+
+  .col-result, .col-cart{
+    height: 500px;
+    border: 1px solid #2b2b2b;
+    border-top: none;
+    padding-left: 0;
+    padding-right: 0;
+    overflow-y: hidden;
+  }
+
+  .col-cart{
+    background-color: #2b2b2b;
+  }
+
+  .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link{
+    background-color: #2b2b2b;
+    border: none
+  }
+
+  .nav-tabs .nav-link:hover,.nav-link::selection, .nav-tabs .nav-link:focus{
+    border-color: transparent;
+    outline: none;
+  }
+
+  .nav-link.active{
+    color: #FFF;
+  }
+
+  .nav-tabs .nav-link {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .nav-link {
+    padding: 0.5em 0.6em;
+  }
+
+  .nav-tabs{
+    border-bottom: 1px solid #2b2b2b;
+    font-size: 0.8em;
+    background-color: #313335;
+
+
+    a{
+      color: #c8c8c8;
+    }
+  }
+
+  table {
+    display: flex;
+    flex-flow: column;
+    width: 100%;
+
+    border: 1px solid #2b2b2b;
+
+
+    thead th:nth-child(1),tbody td:nth-child(1){
+      width: 60px;
+    }
+
+    thead th:nth-child(3),tbody td:nth-child(3){
+      width: 100px;
+    }
+    //thead th:nth-child(4),tbody td:nth-child(4){
+    //  width: 350px;
+    //}
+    thead th:nth-child(5),tbody td:nth-child(5){
+      width: 100px;
+    }
+    thead th:nth-child(6),tbody td:nth-child(6){
+      width: 100px;
+    }
+
+    thead {
+      flex: 0 0 auto;
+      th{
+        font-size: .9em;
+        font-weight: normal;
+
+      }
+    }
+
+    tbody {
+      flex: 1 1 auto;
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 432px;
+      color: #c8c8c8;
+      font-size: 0.9em;
+    }
+
+    tr {
+      width: 100%;
+      display: table;
+      table-layout: fixed;
+
+      &.selected td{
+        background-color: #232323;
+      }
+    }
+
+    .btn-sm{
+      margin-top: 7px;
+      font-size: 0.9em;
+    }
+  }
+
+
+  .col-cart{
+
+    .cart-lines{
+      height: 480px;
+      overflow-y: scroll;
+    }
+
+    .header{
+      color: #7a7a00;
+      background-color: #404345;
+      padding: 5px 10px;
+      text-align: center;
+
+    }
+
+    table{
+      font-size: 0.8em;
+
+       td:nth-child(1){
+        width: 60px;
+      }
+      td:nth-child(2){
+        width: 30px;
+      }
+      td:nth-child(4){
+          width: 60px;
+        }
+    }
+  }
+
+
+
+}
+
+.ascii{
+  color: #7a7a00;
+  font-size: 4px;
+}

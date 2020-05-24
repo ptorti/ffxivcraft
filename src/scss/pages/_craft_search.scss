@@ -1,0 +1,81 @@
+.craft_search{
+
+  form.search{
+    background-color: #404345;
+    color: #ececec;
+    padding: 5px;
+    font-size: 0.9em;
+    border: 2px solid #323232;
+
+    .form-control-sm{
+      height: 1.5em;
+      line-height: 1;
+      font-size: 0.9em;
+      background-color: #404345;
+      border: none;
+      border-bottom: 1px solid #767676;
+      margin-right: 20px;
+      color: #7a7a00;
+
+      &:focus{
+        outline: none;
+      }
+
+      &.ilvl{
+        width: 60px;
+      }
+    }
+
+
+    .select2{
+      background-color: #404345;
+      min-width: 200px;
+      margin-right: 20px;
+      font-size: 0.9em;
+      border: none;
+      color: #7a7a00;
+
+      div[class$="-singleValue"]{
+        color: #7a7a00
+      }
+
+      div[class$="-control"], div[class$="-control"]:hover, div[class$="-control"]:focus, div[class$="-control"]:active{
+        background-color: #404345;
+        border: none;
+        outline: none;
+        box-shadow: none;
+      }
+
+      div[class$="menu"], div[class$="menu"]:hover{
+        margin-top: -3px;
+        background-color: #404345;
+        //border: 1px solid #2b2b2b;
+      }
+
+      div[class$="option"]:hover{
+        background-color: #c8c8c8;
+      }
+
+
+      /*
+      > div {
+        background-color: #404345;
+        border: none;
+        color: #7a7a00;
+        box-shadow: none;
+
+        &:hover{
+          border: none
+        }
+
+      }
+
+       */
+
+    }
+
+    label{
+      margin-right: 10px;
+    }
+  }
+}

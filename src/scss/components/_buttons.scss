@@ -1,0 +1,42 @@
+.btn-primary{
+  background-color: transparent;
+  border: 1px solid #c8c8c8;
+
+
+  &:hover{
+    background-color: #2b2b2b;
+    border: 1px solid #2b2b2b;
+    box-shadow: none;
+  }
+  &:focus {
+    box-shadow: none;
+    background-color: transparent;
+    border: 1px solid #c8c8c8;
+  }
+
+  &.bordered:hover{
+    border: 1px solid #c8c8c8;
+  }
+
+  &:not(:disabled):not(.disabled):active, &:not(:disabled):not(.disabled).active{
+    background-color: transparent;
+    border: 1px solid #c8c8c8;
+    outline: none;
+  }
+
+}
+
+.btn-ico-job{
+  font-size: 1.5em;
+  border: 1px solid #CFC767;
+  color: #CFC767;
+  background-color: #263036;
+  margin-left: 5px;
+  height: 30px;
+  padding-top: 0px;
+  width: 30px;
+  text-align: center;
+  display: block;
+  float: left;
+  border-radius: 5px;
+}

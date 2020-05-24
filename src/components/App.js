@@ -17,7 +17,15 @@ class App extends Component {
     render() {
         return (
                 <div className="App">
-                    <h1>Ingrédient pour craft</h1>
+
+                    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                        <a className="navbar-brand" href="#"><i className="xiv-FFXIVMeteo"/> FFXIV Craft</a>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse"
+                                data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                    </nav>
                     <EquipmentSearchForm/>
                 </div>
         );
