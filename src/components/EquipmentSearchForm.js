@@ -69,13 +69,13 @@ class EquipmentSearchForm extends Component {
             job: 'BRD',
             lvl_min: 480,
             lvl_max: null,
-            receipe_list: [],
             ingredient_list: null
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleReceipeChange = this.handleReceipeChange.bind(this);
 
+        this.receipeSearchFormRef = React.createRef();
     }
 
     handleChange(event) {
@@ -88,7 +88,6 @@ class EquipmentSearchForm extends Component {
         this.setState({
             result_list: null,
             ingredient_list: null,
-            receipe_list: [],
         })
 
         event.preventDefault();
@@ -100,27 +99,41 @@ class EquipmentSearchForm extends Component {
     };
 
     handleReceipeChange(event) {
-        const name = event.target.name;
-        const checked = event.target.checked;
+        this.receipeSearchFormRef.current.dispatchEvent(new Event("submit"));
+    }
 
-        let receipes = this.state.receipe_list;
+    searchReceipe = (event) => {
+        event.preventDefault();
+        console.log("search receipe");
+        let receipesInfos = [];
 
-        if(!receipes.includes(name) && checked){
-            receipes.push(name)
-        };
+        [...event.target.elements].map((element) => {
+            switch (element.type) {
+                case 'checkbox':
+                    if (element.checked) {
+                        receipesInfos.push({
+                            id: element.value,
+                            qty: 1
+                        })
+                    }
+                    break;
+                case 'number':
+                    const existingReceipe = receipesInfos.find(receipe => {
+                        return element.name == receipe.id
+                    });
 
-        if(receipes.includes(name) && !checked){
-            var index = receipes.indexOf(name);
-            receipes.splice(index, 1);
-        };
-
-        this.setState({receipe_list: receipes});
+                    if (existingReceipe) {
+                        existingReceipe.qty = element.value;
+                    }
+                    break;
+            }
+        });
 
         //on raffraichit la liste des ingrédient
-        XIVapi.findIngredientsForReceipes(receipes, datas => {
+        XIVapi.findIngredientsForReceipes(receipesInfos, datas => {
 
-            if(!datas){
-                this.setState({ingredient_list: null })
+            if (!datas) {
+                this.setState({ingredient_list: null})
                 return;
             }
             datas.sort((a, b) => {
@@ -132,10 +145,6 @@ class EquipmentSearchForm extends Component {
                 ingredient_list: datas
             });
         })
-    }
-
-    searchReceipe = (event) => {
-        event.preventDefault();
 
     };
 
@@ -154,7 +163,8 @@ class EquipmentSearchForm extends Component {
                             {
                                 Object.keys(jobs).map(key => {
                                     return (
-                                        <option key={key} value={key} selected={this.state.job == key}>{jobs[key]}</option>
+                                        <option key={key} value={key}
+                                                selected={this.state.job == key}>{jobs[key]}</option>
                                     )
                                 })
                             }
@@ -177,13 +187,13 @@ class EquipmentSearchForm extends Component {
                 </form>
 
                 {this.state.result_list ?
-                    <form onSubmit={this.searchReceipe}>
+                    <form onSubmit={this.searchReceipe} ref={this.receipeSearchFormRef}>
                         <table>
                             <thead>
                             <tr>
                                 <th></th>
+                                <th></th>
                                 <th>Icon</th>
-                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Lvl</th>
                                 <th>ClassJobCategory</th>
@@ -195,15 +205,19 @@ class EquipmentSearchForm extends Component {
                             {this.state.result_list.map((data, key) => {
                                 return (
                                     <tr key={key}>
-                                        <td><input type={"checkbox"} onChange={this.handleReceipeChange} name={data.GameContentLinks.Recipe.ItemResult}/></td>
+                                        <td><input type={"checkbox"} onChange={this.handleReceipeChange}
+                                                   defaultChecked={false}
+                                                   value={data.GameContentLinks.Recipe.ItemResult}/></td>
+                                        <td><input type={"number"} onChange={this.handleReceipeChange}
+                                                   name={data.GameContentLinks.Recipe.ItemResult} defaultValue={1}
+                                                   style={{width: '30px'}}/></td>
                                         <td><img src={XIVapi.getImgPathForIcon(data.Icon)}/></td>
-                                        <td>{data.ID}</td>
                                         <td>{data.Name}</td>
                                         <td>{data.LevelItem}</td>
                                         <td>{data.ClassJobCategory.Name}</td>
                                         <td>
                                             {(() => {
-                                                if(data.EquipSlotCategory){
+                                                if (data.EquipSlotCategory) {
                                                     return Object.entries(data.EquipSlotCategory).map(slotInfo => {
                                                         return (slotInfo[1] == 1) ? slotInfo[0] + " " : " "
                                                     });
@@ -222,32 +236,37 @@ class EquipmentSearchForm extends Component {
                 }
 
                 {this.state.ingredient_list ?
-                    <form onSubmit={this.searchReceipe}>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>Icon</th>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Quantity</th>
-                                <th>Equipements</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {this.state.ingredient_list.map((data, key) => {
-                                return (
-                                    <tr key={key}>
-                                        <td><img src={XIVapi.getImgPathForIcon(data.Icon)}/></td>
-                                        <td>{data.ID}</td>
-                                        <td>{data.Name}</td>
-                                        <td>{data.qty}</td>
-                                        <td>{data.craft}</td>
-                                    </tr>
-                                )
-                            })}
-                            </tbody>
-                        </table>
-                    </form>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Quantity</th>
+                            <th>Icon</th>
+                            <th>Name</th>
+
+                            <th>Equipements</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {this.state.ingredient_list.map((data, key) => {
+                            return (
+                                <tr key={key}>
+                                    <td>{Math.ceil(data.qty)}</td>
+                                    <td><img src={XIVapi.getImgPathForIcon(data.Icon)}/></td>
+                                    <td>{data.Name}</td>
+                                    <td>
+                                        {(() => {
+                                            if (data.craft) {
+                                                return Object.entries(data.craft).map(craft => {
+                                                    return craft[1] + " - "
+                                                });
+                                            }
+                                        })()}
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                        </tbody>
+                    </table>
                     : null
 
                 }

@@ -6,7 +6,9 @@ class XIVapi {
     searchUrl = "/search";
     recipeUrl = "/Recipe/{id}";
     lng = "fr";
-    private_key="6e1be05871de497599af61d8f46551b40fbd67efb4b645cd95aed243d8e8066f";
+    private_key = "6e1be05871de497599af61d8f46551b40fbd67efb4b645cd95aed243d8e8066f";
+
+    saved_request = [];
 
     getImgPathForIcon(iconPath) {
         return this.baseUrl + iconPath;
@@ -17,8 +19,8 @@ class XIVapi {
 
         let columns = "ID,GameContentLinks,ItemGlamour.Description_fr,Icon,Name,Description_fr,LevelItem,ClassJobCategory.Name,EquipSlotCategory";
 
+        //'Rarity>=2',
         let filters = [
-            'Rarity>=2',
             'EquipSlotCategoryTarget=EquipSlotCategory',
             'GameContentLinks.Recipe.ItemResult>1'
         ];
@@ -43,16 +45,66 @@ class XIVapi {
 
     };
 
+    _buildIngredientFromResponse = (ingredients, data, craftQty , craft) => {
+
+        let cptElement = 0;
+
+        for (let i = 0; i < 10; i++) {
+            if (data["ItemIngredient" + i + "TargetID"] > 0) {
+                cptElement++;
+                //on test si receipe
+                let recipeKey = 'ItemIngredientRecipe' + i;
+                const jsonIngredient = data["ItemIngredient" + i];
+                const name = jsonIngredient['Name_fr'];
+                const qty = data["AmountIngredient" + i];
+                const nbCraft = data['AmountResult'];
+                const newQtyMultiplicaated = (craftQty * qty) / nbCraft;
+
+                if (data[recipeKey] && data[recipeKey] != "null") {
+
+                    this._buildIngredientFromResponse(ingredients, data[recipeKey][0], newQtyMultiplicaated, craft)
+
+                } else {
+
+                    let finded = ingredients.find((element) => {
+                        return element.ID == jsonIngredient.ID
+                    });
+
+                    if (finded) {
+                        finded.qty += newQtyMultiplicaated;
+
+                        if (!finded.craft.includes(craft)) {
+                            finded.craft.push(craft);
+                        }
+
+                    } else {
+                        ingredients.push({
+                            ID: jsonIngredient.ID,
+                            Name: name,
+                            NameEN: jsonIngredient.Name_en,
+                            qty: newQtyMultiplicaated,
+                            nbCraft: nbCraft,
+                            Icon: jsonIngredient.Icon,
+                            craft: [craft]
+                        });
+                    }
+                }
+            }
+        }
+
+    };
+
     findIngredientsForReceipes = (receipes, callback) => {
         let ingredients = [];
 
-        console.log(receipes);
-
-        if(receipes.length == 0){
+        if (receipes.length == 0) {
             callback(null)
-        };
+        }
+        ;
 
-        receipes.map((receipe, index) => {
+        receipes.map((receipeInfo, index) => {
+            const receipe = receipeInfo.id
+            const qty = receipeInfo.qty
             const recipeUrl = this.recipeUrl.replace("{id}", receipe);
             const url = this._buildUrl(
                 recipeUrl,
@@ -61,51 +113,42 @@ class XIVapi {
             this._getJson(url, (datas => {
                 //on traite les données:
                 const data = datas.data;
-                for (let i = 0; i < 10; i++) {
-                    if (data["ItemIngredient" + i + "TargetID"] > 0) {
-                        const jsonIngredient = data["ItemIngredient" + i];
-                        const name = jsonIngredient['Name_fr'];
-                        const qty = data["AmountIngredient" + i];
-                        const nbCraft = data['AmountResult'];
 
-                        let finded = ingredients.find((element) => {
-                            return element.ID == jsonIngredient.ID
-                        });
+                this._buildIngredientFromResponse(ingredients, data, qty, data.Name);
 
-                        if (finded) {
-                            finded.qty += qty;
-                        } else {
-                            ingredients.push({
-                                ID: jsonIngredient.ID,
-                                Name: name,
-                                qty: qty,
-                                nbCraft: nbCraft,
-                                Icon: jsonIngredient.Icon,
-                                craft: data.Name_fr
-                            });
-                        }
-                    }
+                callback(ingredients);
 
-
-
-
-                }
-                if (index >= (receipes.length - 1)) {
-                    callback(ingredients);
-                }
             }));
 
         });
-
 
     };
 
     _getJson = (url, callback) => {
 
+        const finded = this.saved_request.find((element) => {
+            return element.url === url
+        });
+
+        if (finded) {
+            console.log(`Saved url ${url}`);
+            callback(finded.response);
+            return;
+        }
+
+        console.log(url);
+
         Axios.get(url)
             .then(response => {
-                console.log(response);
                 callback(response);
+
+                this.saved_request.push(
+                    {
+                        url: url,
+                        response: response
+                    }
+                )
+
             })
 
     };
@@ -124,7 +167,7 @@ class XIVapi {
             url += "&columns=" + columns;
         }
 
-        if (this.private_key){
+        if (this.private_key) {
             url += "&private_key=" + this.private_key;
         }
 
