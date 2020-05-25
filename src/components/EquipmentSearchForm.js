@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import XIVapi from "../classes/XIVapi";
+import XIVgathering from "../classes/XIVgathering";
 import Select from 'react-select';
 import {Tabs, Tab, Table, Image} from "react-bootstrap"
 import Bg from "./../img/ffxivbg.jpg"
@@ -90,6 +91,7 @@ class EquipmentSearchForm extends Component {
         this.handleReceipeChange = this.handleReceipeChange.bind(this);
         this.addToReceipe = this.addToReceipe.bind(this);
         this.removeReceipe = this.removeReceipe.bind(this);
+        this.getIngredientInfo = this.getIngredientInfo.bind(this);
 
         this.receipeSearchFormRef = React.createRef();
     }
@@ -122,6 +124,13 @@ class EquipmentSearchForm extends Component {
         this.receipeSearchFormRef.current.dispatchEvent(new Event("submit"));
     }
 
+    getIngredientInfo = data => {
+        console.log(data);
+        XIVgathering.getIngredientInfo(data, ingredient => {
+            console.log(ingredient);
+        });
+
+    }
 
     searchReceipes = (receipes) => {
         //on raffraichit la liste des ingrédient
@@ -376,7 +385,7 @@ class EquipmentSearchForm extends Component {
                                         </div>
                                     </>
                                     :
-                                    <div >
+                                    <div>
                                         <Ascii/>
                                     </div>
 
@@ -403,6 +412,7 @@ class EquipmentSearchForm extends Component {
                                     <th>Qté</th>
                                     <th>Nom</th>
                                     <th>Emplacement</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -423,6 +433,11 @@ class EquipmentSearchForm extends Component {
                                                             });
                                                         }
                                                     })()}
+                                            </td>
+                                            <td>
+                                                <button className="btn btn-primary bordered btn-sm" onClick={() => {
+                                                    this.getIngredientInfo(data)
+                                                }}><i className="xiv-SymbolAlarmClock"/></button>
                                             </td>
                                         </tr>
                                     )

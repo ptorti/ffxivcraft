@@ -111,7 +111,8 @@ class XIVapi {
                             qty: newQtyMultiplicaated,
                             nbCraft: nbCraft,
                             Icon: jsonIngredient.Icon,
-                            craft: slot
+                            craft: slot,
+                            gathering: null
                         });
                     }
                 }
